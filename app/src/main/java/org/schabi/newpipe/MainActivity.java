@@ -163,6 +163,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onCreate(savedInstanceState);
+
+        if (redirectToTvIfApplicable()) {
+            return;
+        }
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPrefEditor = sharedPreferences.edit();
 
@@ -208,6 +213,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         MigrationManager.showUserInfoIfPresent(this);
+    }
+
+    private boolean redirectToTvIfApplicable() {
+        if (DeviceUtils.isTv(this) && !getIntent().getBooleanExtra("force_mobile_ui", false)) {
+            startActivity(new Intent(this, org.schabi.newpipe.tv.ui.TvMainActivity.class));
+            finish();
+            return true;
+        }
+        return false;
     }
 
     @Override
