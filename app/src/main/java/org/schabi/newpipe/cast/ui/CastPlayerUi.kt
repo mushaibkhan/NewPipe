@@ -1,5 +1,6 @@
 package org.schabi.newpipe.cast.ui
 
+import org.schabi.newpipe.cast.model.CastDeviceType
 import org.schabi.newpipe.cast.model.CastPlayerState
 import org.schabi.newpipe.cast.session.CastSession
 import org.schabi.newpipe.cast.session.CastSessionManager
@@ -98,7 +99,7 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
         if (castManager.isConnected && isCastingActive &&
             !player.exoPlayerIsNull() && player.exoPlayer.isPlaying
         ) {
-            player.pause()
+            player.pauseLocalPlayback()
         }
     }
 
@@ -127,12 +128,12 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
         lastLoadedMediaKey = mediaKey
 
         if (currentInfo != null) {
-            val streamUrl = selectCastStreamUrl(currentInfo)
+            val streamUrl = selectCastStreamUrl(currentInfo, session.device.type)
             val title = currentInfo.name
             val artist = currentInfo.uploaderName
             val thumbnailUrl = currentInfo.thumbnails?.maxByOrNull { it.width * it.height }?.url
 
-            player.pause()
+            player.pauseLocalPlayback()
             session.loadMedia(
                 streamUrl = streamUrl,
                 title = title,
@@ -141,7 +142,7 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
                 startPositionMs = currentPos
             )
         } else if (currentItem != null) {
-            player.pause()
+            player.pauseLocalPlayback()
             session.loadMedia(
                 streamUrl = currentItem.url,
                 title = currentItem.title,
@@ -152,23 +153,29 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
         }
     }
 
-    private fun selectCastStreamUrl(streamInfo: StreamInfo): String {
-        // If it's YouTube, return canonical YouTube URL
-        val ytVideoId = CastUtils.extractYouTubeVideoId(streamInfo.originalUrl)
-            ?: CastUtils.extractYouTubeVideoId(streamInfo.url)
-        if (ytVideoId != null) {
-            return if (!streamInfo.originalUrl.isNullOrEmpty()) {
-                streamInfo.originalUrl
-            } else {
-                streamInfo.url
+    private fun selectCastStreamUrl(
+        streamInfo: StreamInfo,
+        deviceType: CastDeviceType
+    ): String {
+        // Smart TV / YouTube on TV apps using the Lounge protocol require the YouTube video ID
+        if (deviceType == CastDeviceType.YOUTUBE_LOUNGE) {
+            val ytVideoId = CastUtils.extractYouTubeVideoId(streamInfo.originalUrl)
+                ?: CastUtils.extractYouTubeVideoId(streamInfo.url)
+            if (ytVideoId != null) {
+                return if (!streamInfo.originalUrl.isNullOrEmpty()) {
+                    streamInfo.originalUrl
+                } else {
+                    streamInfo.url
+                }
             }
         }
 
-        // For non-YouTube streams: prefer highest resolution progressive MP4 stream
+        // For Google Cast / Chromecast (Default Media Receiver) and standard media renderers:
+        // Prefer highest resolution progressive MP4 or direct HLS stream
         val videoStreams = streamInfo.videoStreams
         val progressiveMp4 = videoStreams?.filter { it.format?.suffix == "mp4" }
             ?.maxByOrNull { it.height }
-        if (progressiveMp4 != null) {
+        if (progressiveMp4 != null && !progressiveMp4.content.isNullOrEmpty()) {
             return progressiveMp4.content
         }
 
@@ -178,7 +185,7 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
         }
 
         val audioStream = streamInfo.audioStreams?.firstOrNull()
-        if (audioStream != null) {
+        if (audioStream != null && !audioStream.content.isNullOrEmpty()) {
             return audioStream.content
         }
 

@@ -123,8 +123,8 @@ class CastChannelSession(
                 // Step 1: Connect to receiver-0
                 sendMessage(RECEIVER_ID, NS_CONNECTION, JSONObject().put("type", "CONNECT"))
 
-                // Step 2: Launch YouTube Receiver app by default
-                launchApp(APP_ID_YOUTUBE)
+                // Step 2: Launch Default Media Receiver for universal direct media playback
+                launchApp(APP_ID_DEFAULT_MEDIA_RECEIVER)
             } catch (e: Exception) {
                 disconnect()
                 mainHandler.post { listener.onSessionEnded(this, e) }
@@ -187,10 +187,15 @@ class CastChannelSession(
             startPositionMs,
             ytVideoId
         )
-        val targetAppId = if (ytVideoId != null) {
-            APP_ID_YOUTUBE
-        } else {
+        val isDirectMediaStream = streamUrl.contains(".mp4") ||
+            streamUrl.contains(".m3u8") ||
+            streamUrl.contains("googlevideo.com") ||
+            ytVideoId == null
+
+        val targetAppId = if (isDirectMediaStream) {
             APP_ID_DEFAULT_MEDIA_RECEIVER
+        } else {
+            APP_ID_YOUTUBE
         }
 
         val tid = transportId
@@ -207,7 +212,7 @@ class CastChannelSession(
         lastMediaRequest = request
         Thread {
             try {
-                if (request.youtubeVideoId != null) {
+                if (request.youtubeVideoId != null && activeAppId == APP_ID_YOUTUBE) {
                     val flingPayload = JSONObject().apply {
                         put("type", "flingVideo")
                         put(

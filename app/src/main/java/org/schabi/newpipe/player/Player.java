@@ -90,6 +90,7 @@ import org.schabi.newpipe.error.ErrorUtil;
 import org.schabi.newpipe.cast.model.CastPlayerState;
 import org.schabi.newpipe.cast.session.CastSession;
 import org.schabi.newpipe.cast.session.CastSessionManager;
+import org.schabi.newpipe.cast.ui.CastPlayerUi;
 import org.schabi.newpipe.error.UserAction;
 import org.schabi.newpipe.extractor.Image;
 import org.schabi.newpipe.extractor.stream.AudioStream;
@@ -318,7 +319,8 @@ public final class Player implements PlaybackListener, Listener {
         // PlayerUi#initPlayer(), and UIs.call() guarantees UI order is preserved.
         UIs = new PlayerUiList(
                 new MediaSessionPlayerUi(this, mediaSession, sessionConnector),
-                new NotificationPlayerUi(this)
+                new NotificationPlayerUi(this),
+                new CastPlayerUi(this)
         );
     }
 
@@ -1789,6 +1791,18 @@ public final class Player implements PlaybackListener, Listener {
         final CastSessionManager castManager = CastSessionManager.getInstance(context);
         if (castManager.isConnected() && castManager.getCurrentSession() != null) {
             castManager.getCurrentSession().pause();
+        }
+        if (audioReactor == null || exoPlayerIsNull()) {
+            return;
+        }
+
+        simpleExoPlayer.pause();
+        saveStreamProgressState();
+    }
+
+    public void pauseLocalPlayback() {
+        if (DEBUG) {
+            Log.d(TAG, "pauseLocalPlayback() called");
         }
         if (audioReactor == null || exoPlayerIsNull()) {
             return;
