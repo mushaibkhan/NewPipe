@@ -24,7 +24,7 @@ import org.schabi.newpipe.util.ThemeHelper
 class CastDeviceBottomSheet : BottomSheetDialogFragment() {
 
     override fun getTheme(): Int {
-        return ThemeHelper.getBottomSheetDialogTheme(requireContext())
+        return ThemeHelper.getDialogTheme(requireContext())
     }
 
     private lateinit var castManager: CastSessionManager
