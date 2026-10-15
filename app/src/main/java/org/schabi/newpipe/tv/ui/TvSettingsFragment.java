@@ -15,6 +15,14 @@ import androidx.preference.PreferenceScreen;
 
 import org.schabi.newpipe.R;
 
+/**
+ * 10-foot television settings fragment powered by AndroidX Leanback.
+ *
+ * <p>Extends {@link LeanbackSettingsFragmentCompat} to present preferences defined in
+ * {@code tv_preferences.xml} with focus animations and TV resolution defaults.</p>
+ *
+ * @see androidx.leanback.preference.LeanbackSettingsFragmentCompat
+ */
 public class TvSettingsFragment extends LeanbackSettingsFragmentCompat {
 
     @Override

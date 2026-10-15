@@ -19,6 +19,13 @@ import org.schabi.newpipe.util.DeviceUtils;
 import org.schabi.newpipe.util.Localization;
 import org.schabi.newpipe.util.image.CoilHelper;
 
+/**
+ * Leanback {@link Presenter} for rendering channel cards on Android TV.
+ *
+ * <p>Renders channel avatars and metadata (channel name, subscriber count) on 160x160dp cards.</p>
+ *
+ * @see androidx.leanback.widget.Presenter
+ */
 public class ChannelCardPresenter extends Presenter {
 
     private static final int CARD_SIZE_DP = 160;

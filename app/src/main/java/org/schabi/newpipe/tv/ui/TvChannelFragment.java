@@ -35,6 +35,15 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+/**
+ * 10-foot Channel hub for Android TV.
+ *
+ * <p>Extends {@link BrowseSupportFragment} to present channel metadata (title, avatar, banner)
+ * alongside categorized rows for channel uploads and playlists, navigable with a TV remote.</p>
+ *
+ * @see androidx.leanback.app.BrowseSupportFragment
+ * @see VideoCardPresenter
+ */
 public class TvChannelFragment extends BrowseSupportFragment implements OnItemViewClickedListener {
 
     private static final String TAG = "TvChannelFragment";

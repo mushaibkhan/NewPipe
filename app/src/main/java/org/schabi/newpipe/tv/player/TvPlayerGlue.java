@@ -15,6 +15,16 @@ import androidx.leanback.widget.PlaybackControlsRow;
 
 import org.schabi.newpipe.player.helper.PlayerHolder;
 
+/**
+ * Android TV Leanback transport control glue bridging D-pad remote controls to NewPipe playback.
+ *
+ * <p>Extends {@link PlaybackTransportControlGlue} to define primary actions
+ * (Play, Pause, Fast Forward, Rewind, Skip Next, Skip Previous) and secondary actions
+ * (Repeat, Shuffle) rendered in the 10-foot on-screen controller overlay.</p>
+ *
+ * @see androidx.leanback.media.PlaybackTransportControlGlue
+ * @see NewPipePlayerAdapter
+ */
 public class TvPlayerGlue extends PlaybackTransportControlGlue<NewPipePlayerAdapter> {
 
     private PlaybackControlsRow.PlayPauseAction playPauseAction;

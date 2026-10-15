@@ -47,6 +47,22 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+/**
+ * Android TV 10-foot details screen displaying stream synopsis, actions, and related videos.
+ *
+ * <p>Extends {@link DetailsSupportFragment} to provide a Leanback overview:
+ * <ul>
+ *   <li><b>Overview Row</b>: Thumbnail backdrop, title, author, upload date,
+ *       view count, and description via {@link DetailsDescriptionPresenter}.</li>
+ *   <li><b>Action Buttons</b>: Play, Enqueue, Open Channel, and View Comments.</li>
+ *   <li><b>Related Streams Row</b>: Horizontal {@link ListRow} populated with
+ *       related videos from {@link StreamInfo#getRelatedItems()}.</li>
+ * </ul>
+ *
+ * @see androidx.leanback.app.DetailsSupportFragment
+ * @see DetailsDescriptionPresenter
+ * @see TvCommentsDialog
+ */
 public class TvVideoDetailsFragment extends DetailsSupportFragment
         implements OnActionClickedListener, OnItemViewClickedListener {
 

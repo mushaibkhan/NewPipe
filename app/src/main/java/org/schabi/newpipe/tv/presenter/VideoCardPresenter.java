@@ -19,6 +19,15 @@ import org.schabi.newpipe.util.DeviceUtils;
 import org.schabi.newpipe.util.Localization;
 import org.schabi.newpipe.util.image.CoilHelper;
 
+/**
+ * Leanback {@link Presenter} for rendering 16:9 video stream cards on Android TV.
+ *
+ * <p>Constructs focusable {@link ImageCardView} cards with 16:9 dimensions (300x170dp),
+ * loads thumbnails via {@link CoilHelper}, and displays title, author, and view count.</p>
+ *
+ * @see androidx.leanback.widget.Presenter
+ * @see androidx.leanback.widget.ImageCardView
+ */
 public class VideoCardPresenter extends Presenter {
 
     private static final int CARD_WIDTH_DP = 300;

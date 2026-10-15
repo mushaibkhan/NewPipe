@@ -10,6 +10,14 @@ import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 
+/**
+ * Leanback {@link AbstractDetailsDescriptionPresenter} binding stream metadata on Android TV.
+ *
+ * <p>Populates video title, uploader name, upload date, and full synopsis text in the
+ * details overview pane of {@link org.schabi.newpipe.tv.ui.TvVideoDetailsFragment}.</p>
+ *
+ * @see androidx.leanback.widget.AbstractDetailsDescriptionPresenter
+ */
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 
     @Override

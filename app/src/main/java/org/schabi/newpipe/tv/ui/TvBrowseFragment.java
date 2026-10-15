@@ -45,6 +45,28 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+/**
+ * Android TV Leanback browse fragment displaying horizontal content rows.
+ *
+ * <p>Extends {@link BrowseSupportFragment} to provide an accessible 10-foot television home screen.
+ * It manages side-navigation category headers and horizontal {@link ListRow} feeds:
+ * <ul>
+ *   <li><b>Trending / Kiosk</b>: Fetches trending streams asynchronously
+ *       via {@link ExtractorHelper}.</li>
+ *   <li><b>Subscriptions Feed</b>: Loads local subscription updates
+ *       via {@link FeedDatabaseManager}.</li>
+ *   <li><b>Bookmarked Playlists</b>: Displays user playlists via {@link LocalPlaylistManager}.</li>
+ *   <li><b>Playback History</b>: Displays recently watched videos
+ *       via {@link HistoryRecordManager}.</li>
+ * </ul>
+ *
+ * <p>User interactions are handled via {@link OnItemViewClickedListener}, routing selections
+ * to {@link TvNavigationHelper#openVideoDetails} or {@link TvNavigationHelper#openChannel}.</p>
+ *
+ * @see androidx.leanback.app.BrowseSupportFragment
+ * @see VideoCardPresenter
+ * @see PlaylistCardPresenter
+ */
 public class TvBrowseFragment extends BrowseSupportFragment implements OnItemViewClickedListener {
 
     private static final String TAG = "TvBrowseFragment";

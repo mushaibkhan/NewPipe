@@ -24,6 +24,18 @@ import org.schabi.newpipe.player.event.PlayerServiceExtendedEventListener;
 import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
 
+/**
+ * Leanback video playback fragment rendering ExoPlayer video output on Android TV.
+ *
+ * <p>Extends {@link VideoSupportFragment} to provide native 10-foot media playback.
+ * Connects the video surface via {@link SurfaceHolder.Callback} to ExoPlayer and hosts
+ * {@link TvPlayerGlue} via {@link VideoSupportFragmentGlueHost} to synchronize
+ * transport controls.</p>
+ *
+ * @see androidx.leanback.app.VideoSupportFragment
+ * @see TvPlayerGlue
+ * @see NewPipePlayerAdapter
+ */
 public class TvPlaybackSupportFragment extends VideoSupportFragment
         implements SurfaceHolder.Callback, PlayerServiceExtendedEventListener {
 

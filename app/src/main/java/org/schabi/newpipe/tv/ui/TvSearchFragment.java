@@ -50,6 +50,24 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
+/**
+ * 10-foot search screen for Android TV featuring reactive debouncing and voice search.
+ *
+ * <p>Extends {@link SearchSupportFragment} and implements
+ * {@link SearchSupportFragment.SearchResultProvider}:
+ * <ul>
+ *   <li><b>Voice Search</b>: Integrates speech recognition via {@code RECORD_AUDIO}
+ *       permission and {@link SpeechRecognizer}.</li>
+ *   <li><b>Reactive Debounce</b>: Employs a {@link PublishSubject} with a 400ms debounce
+ *       buffer to eliminate search query thrashing during rapid D-pad keyboard typing.</li>
+ *   <li><b>Results Grouping</b>: Categorizes results into distinct rows
+ *       (Videos, Channels, Playlists).</li>
+ * </ul>
+ *
+ * @see androidx.leanback.app.SearchSupportFragment
+ * @see VideoCardPresenter
+ * @see ChannelCardPresenter
+ */
 public class TvSearchFragment extends SearchSupportFragment
         implements SearchSupportFragment.SearchResultProvider, OnItemViewClickedListener {
 

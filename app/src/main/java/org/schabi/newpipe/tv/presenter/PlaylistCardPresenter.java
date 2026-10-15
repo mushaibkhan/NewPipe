@@ -18,6 +18,13 @@ import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem;
 import org.schabi.newpipe.util.DeviceUtils;
 import org.schabi.newpipe.util.image.CoilHelper;
 
+/**
+ * Leanback {@link Presenter} for rendering playlist and album cards on Android TV.
+ *
+ * <p>Constructs 260x150dp cards displaying playlist thumbnail, title, and stream count.</p>
+ *
+ * @see androidx.leanback.widget.Presenter
+ */
 public class PlaylistCardPresenter extends Presenter {
 
     private static final int CARD_WIDTH_DP = 260;

@@ -13,6 +13,14 @@ import androidx.fragment.app.FragmentActivity;
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.tv.util.TvNavigationHelper;
 
+/**
+ * Container activity hosting {@link TvChannelFragment} on Android TV.
+ *
+ * <p>Receives channel parameters (service ID, channel URL, title), launches the channel
+ * fragment, and displays channel uploads and playlists in a 10-foot browse layout.</p>
+ *
+ * @see TvChannelFragment
+ */
 public class TvChannelActivity extends FragmentActivity {
 
     @Override

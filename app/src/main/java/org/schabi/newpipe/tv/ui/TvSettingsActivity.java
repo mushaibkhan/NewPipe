@@ -12,6 +12,11 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.schabi.newpipe.R;
 
+/**
+ * Container activity hosting {@link TvSettingsFragment} for Leanback preference navigation.
+ *
+ * @see TvSettingsFragment
+ */
 public class TvSettingsActivity extends FragmentActivity {
 
     @Override

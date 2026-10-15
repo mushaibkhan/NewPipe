@@ -32,6 +32,13 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+/**
+ * Accessible 10-foot television dialog displaying video comments.
+ *
+ * <p>Presents a scrollable {@link RecyclerView} of stream comments asynchronously loaded via
+ * {@link ExtractorHelper#getCommentsInfo}. Designed with large typography and high-contrast
+ * focus highlights for comfortable D-pad navigation on the big screen.</p>
+ */
 public class TvCommentsDialog extends DialogFragment {
 
     private static final String TAG = "TvCommentsDialog";

@@ -13,6 +13,15 @@ import androidx.fragment.app.FragmentActivity;
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.tv.util.TvNavigationHelper;
 
+/**
+ * Container activity hosting {@link TvSearchFragment} on Android TV.
+ *
+ * <p>Receives initial query intents if available, launches the search fragment,
+ * and handles voice recognition / keyboard input in a 10-foot layout.</p>
+ *
+ * @see TvSearchFragment
+ * @see androidx.leanback.app.SearchSupportFragment
+ */
 public class TvSearchActivity extends FragmentActivity {
 
     @Override

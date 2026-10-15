@@ -13,6 +13,16 @@ import androidx.fragment.app.FragmentActivity;
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.tv.util.TvNavigationHelper;
 
+/**
+ * Container activity hosting {@link TvVideoDetailsFragment} on Android TV.
+ *
+ * <p>Receives video parameters (service ID, stream URL, title) via intent extras,
+ * instantiates the details fragment, and displays synopsis, playback actions, and
+ * related streams in a Leanback 10-foot layout.</p>
+ *
+ * @see TvVideoDetailsFragment
+ * @see androidx.leanback.app.DetailsSupportFragment
+ */
 public class TvVideoDetailsActivity extends FragmentActivity {
 
     @Override

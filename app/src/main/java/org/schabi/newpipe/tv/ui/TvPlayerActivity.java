@@ -24,12 +24,31 @@ import org.schabi.newpipe.player.playqueue.PlayQueue;
 import org.schabi.newpipe.tv.player.TvPlaybackSupportFragment;
 import org.schabi.newpipe.util.NavigationHelper;
 
+/**
+ * Fullscreen video playback activity for Android TV.
+ *
+ * <p>Keeps the TV screen illuminated via {@link WindowManager.LayoutParams#FLAG_KEEP_SCREEN_ON},
+ * initiates playback via NewPipe's background {@link PlayerService}, and hosts
+ * {@link TvPlaybackSupportFragment} which coordinates the 10-foot media controls glue.</p>
+ *
+ * <p>Handles hardware remote control keys (Play, Pause, Fast Forward, Rewind, Next, Previous)
+ * directly in {@link #onKeyDown(int, KeyEvent)} to ensure instant responsiveness on physical
+ * remotes.</p>
+ *
+ * @see TvPlaybackSupportFragment
+ * @see org.schabi.newpipe.tv.player.TvPlayerGlue
+ */
 public class TvPlayerActivity extends FragmentActivity {
 
     private static PlayQueue pendingPlayQueue = null;
 
     public static void setPendingPlayQueue(@Nullable final PlayQueue queue) {
         pendingPlayQueue = queue;
+    }
+
+    @Nullable
+    public static PlayQueue getPendingPlayQueue() {
+        return pendingPlayQueue;
     }
 
     @Override

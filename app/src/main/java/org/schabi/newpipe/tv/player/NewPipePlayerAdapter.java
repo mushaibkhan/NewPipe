@@ -14,6 +14,16 @@ import androidx.leanback.media.PlayerAdapter;
 
 import org.schabi.newpipe.player.helper.PlayerHolder;
 
+/**
+ * Leanback {@link PlayerAdapter} implementation wrapping NewPipe's {@link PlayerHolder}.
+ *
+ * <p>Translates Leanback transport commands (play, pause, seekTo, fastForward, rewind)
+ * to NewPipe's ExoPlayer service instance, and periodically broadcasts progress and buffer
+ * position updates back to the UI glue callback.</p>
+ *
+ * @see androidx.leanback.media.PlayerAdapter
+ * @see PlayerHolder
+ */
 public class NewPipePlayerAdapter extends PlayerAdapter {
 
     private final Handler progressHandler = new Handler(Looper.getMainLooper());

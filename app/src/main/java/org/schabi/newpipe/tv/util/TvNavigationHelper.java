@@ -18,6 +18,12 @@ import org.schabi.newpipe.tv.ui.TvSearchActivity;
 import org.schabi.newpipe.tv.ui.TvSettingsActivity;
 import org.schabi.newpipe.tv.ui.TvVideoDetailsActivity;
 
+/**
+ * Centralized navigation router for the Android TV Leanback subsystem.
+ *
+ * <p>Provides static helper methods to launch TV screens (video details, channel hubs,
+ * fullscreen TV player, search, and settings) with consistent intent extras.</p>
+ */
 public final class TvNavigationHelper {
 
     public static final String KEY_SERVICE_ID = "tv_service_id";
