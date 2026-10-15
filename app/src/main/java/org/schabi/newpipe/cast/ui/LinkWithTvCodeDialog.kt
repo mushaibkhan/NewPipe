@@ -11,6 +11,14 @@ import org.schabi.newpipe.R
 import org.schabi.newpipe.cast.session.CastSessionManager
 import org.schabi.newpipe.util.ThemeHelper
 
+/**
+ * Dialog enabling manual pairing with Smart TVs via a 12-digit YouTube TV link code.
+ *
+ * <p>Allows users to connect to YouTube on smart TVs without requiring local multicast/mDNS
+ * network discovery or when devices reside on isolated Wi-Fi subnets.</p>
+ *
+ * @see org.schabi.newpipe.cast.driver.lounge.YouTubeLoungeDriver
+ */
 object LinkWithTvCodeDialog {
 
     fun show(context: Context, onDeviceConnected: (() -> Unit)? = null) {

@@ -14,6 +14,24 @@ import org.schabi.newpipe.cast.session.CastSession
 import org.schabi.newpipe.cast.session.CastStateListener
 import org.schabi.newpipe.cast.util.CastUtils
 
+/**
+ * Manages an active YouTube Lounge (MDX) session using Google's Browser Channel protocol.
+ *
+ * <h3>Protocol Overview:</h3>
+ * <ul>
+ *   <li><b>Transport</b>: HTTP POST long-polling sessions via
+ *       {@code https://www.youtube.com/api/lounge/bc/bind}.</li>
+ *   <li><b>Session Tokens</b>: Initial handshake negotiates an HTTP session identifier ({@code SID})
+ *       and Google session identifier ({@code gsessionid}).</li>
+ *   <li><b>Remote Control</b>: Transmits JSON array commands to manipulate playback on TV:
+ *       {@code setPlaylist}, {@code updatePlaylist}, {@code play}, {@code pause},
+ *       {@code seekTo}, and {@code setVolume}.</li>
+ *   <li><b>Authentication</b>: Authenticated via device-level {@code X-YouTube-LoungeId-Token}
+ *       headers without requiring personal Google user account credentials.</li>
+ * </ul>
+ *
+ * @see YouTubeLoungeDriver
+ */
 class LoungeSession(
     override val device: CastDevice,
     private val listener: CastStateListener,

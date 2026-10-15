@@ -10,6 +10,23 @@ import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.player.Player
 import org.schabi.newpipe.player.ui.PlayerUi
 
+/**
+ * Bridges NewPipe's central {@link Player} with active casting sessions.
+ *
+ * <h3>Playback Handoff & Synchronization:</h3>
+ * <ul>
+ *   <li><b>Handoff to Remote</b>: When a session connects, extracts the best playable media URL
+ *       or YouTube ID, transmits the media load payload to the TV, and pauses the local phone
+ *       ExoPlayer via {@link Player#pauseLocalPlayback()} to prevent concurrent playback.</li>
+ *   <li><b>Return to Local</b>: When casting disconnects, resumes local playback at the exact
+ *       timestamp reported by the remote receiver.</li>
+ *   <li><b>Control Routing</b>: Synchronizes player transport commands (play, pause, seek)
+ *       to the remote cast receiver while a session is active.</li>
+ * </ul>
+ *
+ * @see PlayerUi
+ * @see CastSessionManager
+ */
 class CastPlayerUi(player: Player) : PlayerUi(player) {
 
     private val castManager = CastSessionManager.getInstance(context)

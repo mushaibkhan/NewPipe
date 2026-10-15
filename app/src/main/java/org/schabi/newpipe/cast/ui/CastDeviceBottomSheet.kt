@@ -21,6 +21,21 @@ import org.schabi.newpipe.cast.session.CastSessionManager
 import org.schabi.newpipe.cast.session.CastStateListener
 import org.schabi.newpipe.util.ThemeHelper
 
+/**
+ * Modal bottom sheet presenting available cast receivers, active sessions, and volume controls.
+ *
+ * <h3>Features:</h3>
+ * <ul>
+ *   <li><b>Device Discovery</b>: Displays real-time discovered Google Cast and Lounge devices.</li>
+ *   <li><b>Active Session HUD</b>: Shows currently connected receiver name, volume slider,
+ *       and disconnect control.</li>
+ *   <li><b>Manual Pairing</b>: Provides a button to open {@link LinkWithTvCodeDialog} for entering
+ *       YouTube TV 12-digit pairing codes.</li>
+ * </ul>
+ *
+ * @see CastSessionManager
+ * @see LinkWithTvCodeDialog
+ */
 class CastDeviceBottomSheet : BottomSheetDialogFragment() {
 
     override fun getTheme(): Int {

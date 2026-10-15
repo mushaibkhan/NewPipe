@@ -9,6 +9,23 @@ import org.schabi.newpipe.cast.model.CastDevice
 import org.schabi.newpipe.cast.model.CastDeviceType
 import org.schabi.newpipe.cast.model.CastPlayerState
 
+/**
+ * Central coordinator and state machine managing multi-backend casting across NewPipe.
+ *
+ * <h3>Responsibilities:</h3>
+ * <ul>
+ *   <li><b>Driver Aggregation</b>: Orchestrates concurrent discovery across all registered
+ *       {@link CastDriver} backends (Google Cast and YouTube Lounge).</li>
+ *   <li><b>Session Lifecycle</b>: Maintains the active {@link CastSession}, ensuring only one
+ *       remote sink is engaged at a time and handling disconnect/reconnect transitions.</li>
+ *   <li><b>Thread-Safe Dispatching</b>: Distributes state changes, position progress, and
+ *       discovered device rosters to UI consumers via thread-safe listener lists.</li>
+ * </ul>
+ *
+ * @see CastDriver
+ * @see CastSession
+ * @see CastStateListener
+ */
 class CastSessionManager private constructor(context: Context) {
 
     private val chromecastDriver = ChromecastDriver(context.applicationContext)

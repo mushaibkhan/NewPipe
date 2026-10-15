@@ -10,6 +10,21 @@ import org.schabi.newpipe.cast.model.CastDeviceType
 import org.schabi.newpipe.cast.session.CastSession
 import org.schabi.newpipe.cast.session.CastStateListener
 
+/**
+ * Driver implementation discovering and connecting to Google Cast devices on the local network.
+ *
+ * <h3>Discovery Protocol:</h3>
+ * <p>Uses Android's native {@link NsdManager} (Network Service Discovery) to scan for
+ * mDNS service advertisements of type {@code _googlecast._tcp.}. Parses TXT record attributes
+ * to extract the friendly device name ({@code fn}) and hardware model ({@code md}).</p>
+ *
+ * <h3>Connection Handling:</h3>
+ * <p>Instantiates {@link CastChannelSession} to manage the TLS socket channel and protobuf
+ * communication on port 8009 without depending on Google Play Services.</p>
+ *
+ * @see CastDriver
+ * @see CastChannelSession
+ */
 class ChromecastDriver(private val context: Context) : CastDriver {
 
     private val nsdManager by lazy {

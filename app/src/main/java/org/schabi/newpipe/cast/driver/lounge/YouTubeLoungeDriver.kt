@@ -20,6 +20,23 @@ import org.schabi.newpipe.cast.model.CastDeviceType
 import org.schabi.newpipe.cast.session.CastSession
 import org.schabi.newpipe.cast.session.CastStateListener
 
+/**
+ * Driver implementing the YouTube Lounge (MDX) protocol for Smart TVs and streaming devices.
+ *
+ * <h3>Discovery & Pairing Mechanisms:</h3>
+ * <ul>
+ *   <li><b>DIAL / SSDP Multicast</b>: Broadcasts UDP discovery packets to
+ *       {@code 239.255.255.250:1900} targeting {@code urn:dial-multiscreen-org:service:dial:1}
+ *       to locate Smart TVs running YouTube.</li>
+ *   <li><b>TV Code Pairing</b>: Supports manual pairing by exchanging the 12-digit TV screen
+ *       code via {@code https://www.youtube.com/api/lounge/pairing/get_screen}.</li>
+ *   <li><b>Persistent Device Store</b>: Automatically caches paired screens in SharedPreferences
+ *       for instant reconnects across app sessions.</li>
+ * </ul>
+ *
+ * @see LoungeSession
+ * @see <a href="http://www.dial-multiscreen.org/">DIAL (Discovery and Launch) Specification</a>
+ */
 class YouTubeLoungeDriver(
     private val context: Context,
     private val client: OkHttpClient = OkHttpClient()

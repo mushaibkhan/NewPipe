@@ -23,6 +23,35 @@ import org.schabi.newpipe.cast.session.CastSession
 import org.schabi.newpipe.cast.session.CastStateListener
 import org.schabi.newpipe.cast.util.CastUtils
 
+/**
+ * Manages an active TLS socket session with a Google Cast device over the Cast V2 protocol.
+ *
+ * <h3>Connection & Protocol Architecture:</h3>
+ * <ul>
+ *   <li><b>Transport Layer</b>: TLS socket connected to port 8009. Uses a custom
+ *       {@link X509TrustManager} because Chromecast devices present Google Cast root certs
+ *       or self-signed device certificates.</li>
+ *   <li><b>Heartbeat Mechanism</b>: Background daemon transmits {@code PING} every 5 seconds on
+ *       {@code urn:x-cast:com.google.cast.tp.heartbeat} to prevent device-side socket timeouts.</li>
+ *   <li><b>Receiver Control</b>: Interacts with {@code receiver-0} over
+ *       {@code urn:x-cast:com.google.cast.receiver} to launch applications:
+ *       <ul>
+ *         <li>{@code CC1AD845}: Default Media Receiver for direct MP4/HLS streaming.</li>
+ *         <li>{@code 233637DE}: YouTube on TV receiver.</li>
+ *       </ul>
+ *   </li>
+ *   <li><b>Media Namespace</b>: Issues {@code LOAD}, {@code PLAY}, {@code PAUSE}, and {@code SEEK}
+ *       payloads to {@code urn:x-cast:com.google.cast.media} and parses {@code MEDIA_STATUS}
+ *       events.</li>
+ * </ul>
+ *
+ * <h3>Threading Model:</h3>
+ * <p>Socket I/O executes on dedicated background threads (read loop and heartbeat loop).
+ * All UI state transitions are posted to the Android main thread via {@link Handler}.</p>
+ *
+ * @see CastMessageWire
+ * @see <a href="https://developers.google.com/cast/docs/reference/messages">Cast Messages Reference</a>
+ */
 class CastChannelSession(
     override val device: CastDevice,
     private val listener: CastStateListener

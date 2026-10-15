@@ -7,6 +7,18 @@ import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+/**
+ * Wire-level message envelope for the Google Cast V2 protocol.
+ *
+ * <p>Represents the structured protobuf message exchanged over the TLS socket.</p>
+ *
+ * @param sourceId Identifier of the sender (e.g., "sender-0").
+ * @param destinationId Identifier of the target receiver (e.g., "receiver-0" or transport ID).
+ * @param namespace Protocol namespace routing the message (e.g., heartbeat, receiver, media).
+ * @param payloadUtf8 UTF-8 encoded JSON payload carrying application commands or responses.
+ *
+ * @see <a href="https://source.chromium.org/chromium/chromium/src/+/main:components/cast_channel/">Chromium Cast Channel</a>
+ */
 data class CastMessage(
     val sourceId: String,
     val destinationId: String,
@@ -14,6 +26,30 @@ data class CastMessage(
     val payloadUtf8: String
 )
 
+/**
+ * Low-level binary wire serializer and deserializer for the Google Cast V2 wire protocol.
+ *
+ * <h3>Wire Framing Specification:</h3>
+ * <ul>
+ *   <li><b>Frame Header</b>: 4-byte big-endian integer specifying payload byte length.</li>
+ *   <li><b>Message Body</b>: Serialized Protocol Buffer encoding {@link CastMessage}.</li>
+ * </ul>
+ *
+ * <h3>Protobuf Tag Layout:</h3>
+ * <ul>
+ *   <li>Field 1 (Varint): {@code protocol_version} (0 = CASTV2_1_0)</li>
+ *   <li>Field 2 (Length-delimited): {@code source_id} (e.g., "sender-0")</li>
+ *   <li>Field 3 (Length-delimited): {@code destination_id} (e.g., "receiver-0")</li>
+ *   <li>Field 4 (Length-delimited): {@code namespace}</li>
+ *   <li>Field 5 (Varint): {@code payload_type} (0 = STRING, 1 = BINARY)</li>
+ *   <li>Field 6 (Length-delimited): {@code payload_utf8} (JSON string)</li>
+ * </ul>
+ *
+ * <p>This implementation operates directly on byte streams with zero external dependencies,
+ * avoiding Google Play Services or heavyweight protoc compiler toolchains.</p>
+ *
+ * @see <a href="https://source.chromium.org/chromium/chromium/src/+/main:components/cast_channel/cast_channel.proto">Chromium cast_channel.proto</a>
+ */
 object CastMessageWire {
 
     private const val TAG_PROTOCOL_VERSION = (1 shl 3) or 0
