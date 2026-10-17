@@ -7,6 +7,7 @@ import java.io.OutputStream
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import javax.net.ssl.SSLContext
@@ -73,6 +74,7 @@ class CastChannelSession(
     private var playerState = CastPlayerState.IDLE
 
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val writeExecutor = Executors.newSingleThreadExecutor()
     private var readThread: Thread? = null
     private var heartbeatThread: Thread? = null
     private var pendingMediaLoad: MediaLoadRequest? = null
@@ -203,6 +205,7 @@ class CastChannelSession(
                 outputStream = null
                 readThread?.interrupt()
                 heartbeatThread?.interrupt()
+                writeExecutor.shutdownNow()
                 mainHandler.post { listener.onSessionEnded(this, null) }
             }
         }.start()
@@ -410,15 +413,21 @@ class CastChannelSession(
     }
 
     private fun sendMessage(destinationId: String, namespace: String, payload: JSONObject) {
-        val out = outputStream ?: return
         val message = CastMessage(
             sourceId = SENDER_ID,
             destinationId = destinationId,
             namespace = namespace,
             payloadUtf8 = payload.toString()
         )
-        synchronized(this) {
-            CastMessageWire.writeMessage(out, message)
+        writeExecutor.execute {
+            try {
+                val out = outputStream ?: return@execute
+                synchronized(out) {
+                    CastMessageWire.writeMessage(out, message)
+                }
+            } catch (ignored: Exception) {
+                // Ignore socket errors on closed session
+            }
         }
     }
 
