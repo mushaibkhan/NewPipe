@@ -154,15 +154,8 @@ class CastChannelSession(
                 // Step 1: Connect to receiver-0
                 sendMessage(RECEIVER_ID, NS_CONNECTION, JSONObject().put("type", "CONNECT"))
 
-                // Step 2: Query receiver-0 status to detect any running receiver app
-                sendMessage(
-                    RECEIVER_ID,
-                    NS_RECEIVER,
-                    JSONObject().apply {
-                        put("type", "GET_STATUS")
-                        put("requestId", nextRequestId())
-                    }
-                )
+                // Step 2: Launch Default Media Receiver for immediate feedback on TV (displays Cast icon)
+                launchApp(APP_ID_DEFAULT_MEDIA_RECEIVER)
 
                 isConnected.set(true)
                 mainHandler.post { listener.onSessionStarted(this) }
@@ -229,6 +222,7 @@ class CastChannelSession(
             startPositionMs,
             ytVideoId
         )
+        lastMediaRequest = request
         val isDirectMediaStream = streamUrl.contains(".mp4") ||
             streamUrl.contains(".m3u8") ||
             streamUrl.contains("googlevideo.com") ||
