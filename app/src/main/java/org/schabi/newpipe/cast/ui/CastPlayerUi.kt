@@ -179,21 +179,21 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
         streamInfo: StreamInfo,
         deviceType: CastDeviceType
     ): String {
-        // Smart TV / YouTube on TV apps using the Lounge protocol require the YouTube video ID
-        if (deviceType == CastDeviceType.YOUTUBE_LOUNGE) {
-            val ytVideoId = CastUtils.extractYouTubeVideoId(streamInfo.originalUrl)
-                ?: CastUtils.extractYouTubeVideoId(streamInfo.url)
-            if (ytVideoId != null) {
-                return if (!streamInfo.originalUrl.isNullOrEmpty()) {
-                    streamInfo.originalUrl
-                } else {
-                    streamInfo.url
-                }
+        // For YouTube videos, always provide the canonical YouTube URL.
+        // Both Google Cast (using the official YouTube receiver APP_ID_YOUTUBE "233637DE")
+        // and Smart TV YouTube apps (Lounge protocol) require the YouTube video ID / URL.
+        // Direct media receivers fail with CORS/403 when trying to load raw googlevideo.com URLs.
+        val ytVideoId = CastUtils.extractYouTubeVideoId(streamInfo.originalUrl)
+            ?: CastUtils.extractYouTubeVideoId(streamInfo.url)
+        if (ytVideoId != null) {
+            return if (!streamInfo.originalUrl.isNullOrEmpty()) {
+                streamInfo.originalUrl
+            } else {
+                streamInfo.url
             }
         }
 
-        // For Google Cast / Chromecast (Default Media Receiver) and standard media renderers:
-        // Prefer highest resolution progressive MP4 or direct HLS stream
+        // For non-YouTube sources (SoundCloud, PeerTube, direct media streams):
         val videoStreams = streamInfo.videoStreams
         val progressiveMp4 = videoStreams?.filter { it.format?.suffix == "mp4" }
             ?.maxByOrNull { it.height }

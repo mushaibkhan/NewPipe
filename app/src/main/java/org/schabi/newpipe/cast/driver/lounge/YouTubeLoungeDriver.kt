@@ -153,6 +153,7 @@ class YouTubeLoungeDriver(
                 .build()
             val request = Request.Builder()
                 .url(LOUNGE_TOKEN_BATCH_URL)
+                .addHeader("Origin", "https://www.youtube.com")
                 .post(formBody)
                 .build()
             val response = client.newCall(request).execute()

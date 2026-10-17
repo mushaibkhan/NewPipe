@@ -152,8 +152,18 @@ class CastChannelSession(
                 // Step 1: Connect to receiver-0
                 sendMessage(RECEIVER_ID, NS_CONNECTION, JSONObject().put("type", "CONNECT"))
 
-                // Step 2: Launch Default Media Receiver for universal direct media playback
-                launchApp(APP_ID_DEFAULT_MEDIA_RECEIVER)
+                // Step 2: Query receiver-0 status to detect any running receiver app
+                sendMessage(
+                    RECEIVER_ID,
+                    NS_RECEIVER,
+                    JSONObject().apply {
+                        put("type", "GET_STATUS")
+                        put("requestId", nextRequestId())
+                    }
+                )
+
+                isConnected.set(true)
+                mainHandler.post { listener.onSessionStarted(this) }
             } catch (e: Exception) {
                 disconnect()
                 mainHandler.post { listener.onSessionEnded(this, e) }
@@ -468,7 +478,7 @@ class CastChannelSession(
 
     private fun initLoungeBridge(screenId: String) {
         val loungeDevice = CastDevice(
-            id = "lounge_$screenId",
+            id = "lounge_bridge_$screenId",
             name = device.name,
             type = CastDeviceType.YOUTUBE_LOUNGE,
             screenId = screenId
@@ -526,17 +536,13 @@ class CastChannelSession(
         val app = applications.optJSONObject(0) ?: return
         val appId = app.optString("appId")
         val tid = app.optString("transportId")
-        if (tid.isNotEmpty() && tid != transportId) {
-            val isFirstConnect = (transportId == null)
+        if (tid.isNotEmpty() && (tid != transportId || appId != activeAppId)) {
             activeAppId = appId
             transportId = tid
             sendMessage(tid, NS_CONNECTION, JSONObject().put("type", "CONNECT"))
             if (appId == APP_ID_YOUTUBE) {
                 val mdxQuery = JSONObject().put("type", "getMdxSessionStatus")
                 sendMessage(tid, NS_YOUTUBE_MDX, mdxQuery)
-            }
-            if (isFirstConnect) {
-                mainHandler.post { listener.onSessionStarted(this) }
             }
             pendingMediaLoad?.let { req ->
                 pendingMediaLoad = null

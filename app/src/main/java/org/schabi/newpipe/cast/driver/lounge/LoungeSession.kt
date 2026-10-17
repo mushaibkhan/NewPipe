@@ -161,16 +161,18 @@ class LoungeSession(
         val token = activeLoungeToken ?: return false
         return try {
             val bindUrl = "$LOUNGE_BIND_URL?RID=0&VER=8&CVER=1"
+            val isManualPairing = device.dialAppUrl == null && !device.id.startsWith("lounge_bridge_")
+            val pairingType = if (isManualPairing) "manual" else "cast"
             val formBuilder = FormBody.Builder()
                 .add("device", "REMOTE_CONTROL")
-                .add("id", device.screenId ?: sessionId)
+                .add("id", sessionId)
                 .add("name", "NewPipe")
                 .add("mdx-version", "3")
-                .add("pairing_type", if (device.dialAppUrl != null) "cast" else "manual")
+                .add("pairing_type", pairingType)
                 .add("app", "android-phone-13.14.55")
                 .add("loungeIdToken", token)
 
-            if (device.dialAppUrl == null) {
+            if (isManualPairing) {
                 formBuilder.add("magnaKey", "cloudPairedDevice")
             }
 
@@ -209,7 +211,7 @@ class LoungeSession(
                     return@Thread
                 }
 
-                val formBuilder = FormBody.Builder().add("count", "1").add("ofs", "1")
+                val formBuilder = FormBody.Builder().add("count", "1")
                 params.forEach { (k, v) -> formBuilder.add(k, v) }
 
                 val currentRid = rid.getAndIncrement()
@@ -293,6 +295,7 @@ class LoungeSession(
                 .build()
             val request = Request.Builder()
                 .url("https://www.youtube.com/api/lounge/pairing/get_lounge_token_batch")
+                .addHeader("Origin", ORIGIN_YOUTUBE)
                 .post(formBody)
                 .build()
             val response = client.newCall(request).execute()

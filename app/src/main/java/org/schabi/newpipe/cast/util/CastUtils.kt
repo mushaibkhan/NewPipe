@@ -11,7 +11,7 @@ object CastUtils {
 
     private val RAW_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{11}$")
 
-    private val SCREEN_ID_PATTERN = Pattern.compile("\"screen(?:Id|_id)\"\\s*:\\s*\"([^\"]+)\"")
+    private val SCREEN_ID_PATTERN = Pattern.compile("\"screen(?:Id|_id)\"\\s*:\\s*(?:\"([^\"]+)\"|([a-zA-Z0-9_-]+))")
 
     /**
      * Extracts an 11-character YouTube video ID from various URL formats
@@ -47,7 +47,7 @@ object CastUtils {
         }
         val matcher = SCREEN_ID_PATTERN.matcher(payloadJson)
         if (matcher.find()) {
-            return matcher.group(1)
+            return matcher.group(1) ?: matcher.group(2)
         }
         return null
     }
