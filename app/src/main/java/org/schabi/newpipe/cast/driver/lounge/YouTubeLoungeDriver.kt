@@ -50,6 +50,8 @@ class YouTubeLoungeDriver(
     companion object {
         private const val PREF_PAIRED_LOUNGE_DEVICES = "cast_paired_lounge_devices"
         private const val GET_SCREEN_URL = "https://www.youtube.com/api/lounge/pairing/get_screen"
+        private const val LOUNGE_TOKEN_BATCH_URL =
+            "https://www.youtube.com/api/lounge/pairing/get_lounge_token_batch"
 
         private val SSDP_MULTICAST_ADDR = byteArrayOf(
             239.toByte(),
@@ -139,7 +141,34 @@ class YouTubeLoungeDriver(
     }
 
     override fun createSession(device: CastDevice, listener: CastStateListener): CastSession {
-        return LoungeSession(device, listener, client)
+        return LoungeSession(device, listener, client) { updatedDevice ->
+            saveDevice(updatedDevice)
+        }
+    }
+
+    fun fetchLoungeTokenForScreenId(screenId: String): String? {
+        return try {
+            val formBody = FormBody.Builder()
+                .add("screen_ids", screenId)
+                .build()
+            val request = Request.Builder()
+                .url(LOUNGE_TOKEN_BATCH_URL)
+                .post(formBody)
+                .build()
+            val response = client.newCall(request).execute()
+            val body = response.body?.string() ?: ""
+            response.close()
+
+            val json = JSONObject(body)
+            val screens = json.optJSONArray("screens") ?: return null
+            if (screens.length() > 0) {
+                screens.getJSONObject(0).optString("loungeToken")
+            } else {
+                null
+            }
+        } catch (ignored: Exception) {
+            null
+        }
     }
 
     fun pairWithTvCode(
@@ -167,7 +196,10 @@ class YouTubeLoungeDriver(
                 if (screen != null) {
                     val screenId = screen.optString("screenId")
                     val name = screen.optString("name", "Smart TV")
-                    val loungeToken = screen.optString("loungeToken")
+                    var loungeToken = screen.optString("loungeToken")
+                    if (loungeToken.isEmpty() && screenId.isNotEmpty()) {
+                        loungeToken = fetchLoungeTokenForScreenId(screenId) ?: ""
+                    }
 
                     val device = CastDevice(
                         id = "lounge_$screenId",
@@ -233,7 +265,7 @@ class YouTubeLoungeDriver(
         return null
     }
 
-    private fun saveDevice(device: CastDevice) {
+    internal fun saveDevice(device: CastDevice) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val list = loadSavedDevices().filter { it.id != device.id }.toMutableList()
         list.add(device)

@@ -35,7 +35,8 @@ import org.schabi.newpipe.cast.util.CastUtils
 class LoungeSession(
     override val device: CastDevice,
     private val listener: CastStateListener,
-    private val client: OkHttpClient = OkHttpClient()
+    private val client: OkHttpClient = OkHttpClient(),
+    private val onDeviceUpdated: ((CastDevice) -> Unit)? = null
 ) : CastSession {
 
     private val isConnected = AtomicBoolean(false)
@@ -67,6 +68,9 @@ class LoungeSession(
                         fetchLoungeTokenForScreenId(device.screenId)
                     } else {
                         resolveLoungeTokenFromDial()
+                    }
+                    if (!activeLoungeToken.isNullOrEmpty()) {
+                        onDeviceUpdated?.invoke(device.copy(loungeToken = activeLoungeToken))
                     }
                 }
 
@@ -157,20 +161,24 @@ class LoungeSession(
         val token = activeLoungeToken ?: return false
         return try {
             val bindUrl = "$LOUNGE_BIND_URL?RID=0&VER=8&CVER=1"
-            val formBody = FormBody.Builder()
+            val formBuilder = FormBody.Builder()
                 .add("device", "REMOTE_CONTROL")
-                .add("id", sessionId)
+                .add("id", device.screenId ?: sessionId)
                 .add("name", "NewPipe")
                 .add("mdx-version", "3")
-                .add("pairing_type", "cast")
+                .add("pairing_type", if (device.dialAppUrl != null) "cast" else "manual")
                 .add("app", "android-phone-13.14.55")
-                .build()
+                .add("loungeIdToken", token)
+
+            if (device.dialAppUrl == null) {
+                formBuilder.add("magnaKey", "cloudPairedDevice")
+            }
 
             val request = Request.Builder()
                 .url(bindUrl)
                 .addHeader(HEADER_LOUNGE_TOKEN, token)
                 .addHeader("Origin", ORIGIN_YOUTUBE)
-                .post(formBody)
+                .post(formBuilder.build())
                 .build()
 
             val response = client.newCall(request).execute()
@@ -201,12 +209,12 @@ class LoungeSession(
                     return@Thread
                 }
 
-                val formBuilder = FormBody.Builder().add("count", "1")
+                val formBuilder = FormBody.Builder().add("count", "1").add("ofs", "1")
                 params.forEach { (k, v) -> formBuilder.add(k, v) }
 
                 val currentRid = rid.getAndIncrement()
                 val url = "$LOUNGE_BIND_URL?SID=$sid&gsessionid=$gsessionId" +
-                    "&RID=$currentRid&VER=8&CVER=1"
+                    "&RID=$currentRid&VER=8&CVER=1&loungeIdToken=$token"
                 val request = Request.Builder()
                     .url(url)
                     .addHeader(HEADER_LOUNGE_TOKEN, token)
@@ -218,9 +226,13 @@ class LoungeSession(
                 val code = response.code
                 response.close()
 
-                if ((code == 400 || code == 404) && retryOnFailure && bind()) {
-                    // Session expired or out of sync; re-bind and retry command
-                    sendCommand(params, retryOnFailure = false)
+                if ((code == 400 || code == 404) && retryOnFailure) {
+                    sid = null
+                    gsessionId = null
+                    rid.set(0)
+                    if (bind()) {
+                        sendCommand(params, retryOnFailure = false)
+                    }
                 }
             } catch (ignored: Exception) {
                 // Ignore transient network errors when sending lounge command

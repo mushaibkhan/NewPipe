@@ -88,12 +88,16 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
         }
     }
 
+    private val isCasting: Boolean
+        get() = isCastingActive || castManager.isConnected
+
     override fun initPlayer() {
         castManager.addListener(castListener)
     }
 
     override fun initPlayback() {
-        if (castManager.isConnected) {
+        if (isCasting) {
+            isCastingActive = true
             val session = castManager.currentSession
             if (session != null) {
                 loadCurrentStreamToCast(session)
@@ -103,7 +107,8 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
 
     override fun onMetadataChanged(info: StreamInfo) {
         super.onMetadataChanged(info)
-        if (castManager.isConnected && isCastingActive) {
+        if (isCasting) {
+            isCastingActive = true
             val session = castManager.currentSession
             if (session != null) {
                 loadCurrentStreamToCast(session)
@@ -113,9 +118,8 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
 
     override fun onPlaying() {
         super.onPlaying()
-        if (castManager.isConnected && isCastingActive &&
-            !player.exoPlayerIsNull() && player.exoPlayer.isPlaying
-        ) {
+        if (isCasting && !player.exoPlayerIsNull() && player.exoPlayer.isPlaying) {
+            isCastingActive = true
             player.pauseLocalPlayback()
         }
     }
@@ -129,6 +133,7 @@ class CastPlayerUi(player: Player) : PlayerUi(player) {
     }
 
     private fun loadCurrentStreamToCast(session: CastSession) {
+        isCastingActive = true
         val currentInfo = player.currentStreamInfo.orElse(null)
         val currentItem = player.currentItem
         val currentPos = if (!player.exoPlayerIsNull()) player.exoPlayer.currentPosition else 0L

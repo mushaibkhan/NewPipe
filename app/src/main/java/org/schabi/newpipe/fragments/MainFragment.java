@@ -135,16 +135,18 @@ public class MainFragment extends BaseFragment implements TabLayout.OnTabSelecte
     public void onDestroy() {
         super.onDestroy();
         tabsManager.unsetSavedTabsListener();
-        if (binding != null) {
-            binding.pager.setAdapter(null);
-            binding = null;
-        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        if (binding != null) {
+            binding.mainTabLayout.clearOnTabSelectedListeners();
+            binding.mainTabLayout.setupWithViewPager(null);
+            binding.pager.setAdapter(null);
+            binding = null;
+        }
+        pagerAdapter = null;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
